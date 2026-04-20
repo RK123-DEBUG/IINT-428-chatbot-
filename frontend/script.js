@@ -225,7 +225,11 @@ chatForm.addEventListener('submit', (e) => {
     // Show typing indicator and call backend
     showTypingIndicator();
 
-    fetch("http://localhost:3000/chat", {
+    const apiUrl = window.location.protocol === 'file:' || window.location.hostname === 'localhost' 
+        ? "http://localhost:3000/chat" 
+        : "/chat";
+
+    fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userInput, history: historyContext })

@@ -16,9 +16,10 @@ app.use(cors());
 // 📦 ENABLE JSON PARSING
 app.use(express.json());
 
-// 🏓 Root Route for Health Checks
+// 📁 SERVE STATIC FRONTEND FILES
+app.use(express.static(path.join(process.cwd(), '../frontend')));
 app.get("/", (req, res) => {
-  res.send("🚀 Chatbot backend is running successfully!");
+    res.sendFile(path.join(process.cwd(), '../frontend/index.html'));
 });
 
 // API Keys Array
