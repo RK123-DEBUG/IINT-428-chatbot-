@@ -16,6 +16,11 @@ app.use(cors());
 // 📦 ENABLE JSON PARSING
 app.use(express.json());
 
+// 🏓 Root Route for Health Checks
+app.get("/", (req, res) => {
+  res.send("🚀 Chatbot backend is running successfully!");
+});
+
 // API Keys Array
 const apiKeys = [process.env.OPENROUTER_API_KEY, process.env.GEMINI_API_KEY, process.env.GEMINI_API_KEY_2].filter(Boolean);
 let currentKeyIndex = 0;
