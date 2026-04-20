@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Chatbot Types Expert</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="logo">
+            <span class="logo-icon">🤖</span>
+            <h1>Chatbot Expert</h1>
+        </div>
+        <h2>Login to Your Account</h2>
+        <form id="login-form" class="auth-form">
+            <div class="form-group">
+                <label for="identifier">Username, Email or Mobile Number</label>
+                <input type="text" id="identifier" required placeholder="Enter username or email/mobile">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="Enter your password">
+            </div>
+            <div id="login-error" class="error-msg" style="display:none; padding:10px; margin-bottom:15px; border-radius:5px;"></div>
+            <button type="submit" class="auth-btn">Login</button>
+        </form>
+        <p class="auth-switch">Don't have an account? <a href="signup.html">Sign Up</a></p>
+    </div>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const identifier = document.getElementById('identifier').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('login-error');
+            const submitBtn = document.querySelector('.auth-btn');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Logging in...";
+            errorDiv.style.display = 'none';
+            
+            // Validation
+            if (identifier.length > 40 || password.length > 50) {
+                errorDiv.textContent = 'Error: limit exceeded. Please ensure username/email/mobile and password are within limits.';
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Login";
+                return;
+            }
+
+            const unwantedPattern = /[<>{}[\]\\\/|#&^%$!~`()]/;
+            if (unwantedPattern.test(identifier)) {
+                errorDiv.textContent = 'Error: unwanted use of character. Special characters are not allowed.';
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Login";
+                return;
+            }
+            
+            try {
+                const res = await fetch('http://localhost:3000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ identifier, password })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    localStorage.setItem('currentUser', data.username);
+                    window.location.href = 'index.html';
+                } else {
+                    errorDiv.textContent = data.error;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                console.error(err);
+                errorDiv.textContent = 'Server error. Is the backend running?';
+                errorDiv.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Login";
+            }
+        });
+    </script>
+</body>
+</html>

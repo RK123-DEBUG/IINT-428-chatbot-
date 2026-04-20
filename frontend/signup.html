@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Chatbot Types Expert</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="logo">
+            <span class="logo-icon">🤖</span>
+            <h1>Chatbot Expert</h1>
+        </div>
+        <h2>Create an Account</h2>
+        <form id="signup-form" class="auth-form">
+            <div class="form-group">
+                <label for="emailOrMobile">Email or Mobile Number</label>
+                <input type="text" id="emailOrMobile" required placeholder="Enter email or mobile">
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" required placeholder="Choose a username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="Create a password">
+            </div>
+            <div id="signup-error" class="error-msg" style="display:none; padding:10px; margin-bottom:15px; border-radius:5px;"></div>
+            <button type="submit" class="auth-btn">Sign Up</button>
+        </form>
+        <p class="auth-switch">Already registered? <a href="login.html">Login</a></p>
+    </div>
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const emailOrMobile = document.getElementById('emailOrMobile').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('signup-error');
+            const submitBtn = document.querySelector('.auth-btn');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Signing up...";
+            errorDiv.style.display = 'none';
+            
+            // Validation
+            if (username.length > 20 || emailOrMobile.length > 40 || password.length > 50) {
+                errorDiv.textContent = 'Error: limit exceeded. Please keep inputs within length limits.';
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Sign Up";
+                return;
+            }
+
+            const unwantedPattern = /[<>{}[\]\\\/|#&^%$!~`()]/;
+            const usernamePattern = /[^a-zA-Z0-9_]/;
+
+            if (usernamePattern.test(username) || unwantedPattern.test(emailOrMobile)) {
+                errorDiv.textContent = 'Error: unwanted use of character. Only standard letters/numbers are allowed.';
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Sign Up";
+                return;
+            }
+            
+            try {
+                const res = await fetch('http://localhost:3000/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, emailOrMobile, password })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    alert('Registration successful! Please login with your username & password.');
+                    window.location.href = 'login.html';
+                } else {
+                    errorDiv.textContent = data.error;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                console.error(err);
+                errorDiv.textContent = 'Server error. Is the backend running?';
+                errorDiv.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Sign Up";
+            }
+        });
+    </script>
+</body>
+</html>

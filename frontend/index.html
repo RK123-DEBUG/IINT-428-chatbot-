@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Types Expert</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="layout-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Chat History</h2>
+                <button class="new-chat-btn" onclick="startNewChat()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    New Chat
+                </button>
+            </div>
+            <div class="history-list" id="history-list">
+                <!-- Chats will be listed here -->
+            </div>
+        </aside>
+
+        <!-- Main App Container -->
+        <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div style="position: absolute; right: 1rem; top: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                <span id="user-display-name" style="font-size: 0.9rem; color: var(--text-secondary);"></span>
+                <button onclick="logout()" class="suggestion-chip" style="padding: 4px 10px;">Logout</button>
+            </div>
+            <div class="logo">
+                <span class="logo-icon">🤖</span>
+                <h1>Chatbot Types Expert</h1>
+            </div>
+            <p class="subtitle">Explore and learn about different types of chatbots in a clear and simple way.</p>
+        </header>
+
+        <!-- Chat Container -->
+        <main class="chat-container" id="chat-container">
+            <!-- Initial welcome message from bot -->
+            <div class="message bot-message appearing">
+                <div class="avatar">🤖</div>
+                <div class="message-content">
+                    <p>Welcome! I'm your Chatbot Expert. I can provide deep, technical, and simplified explanations for dozens of different chatbot technologies.</p>
+                    <div class="welcome-suggestions">
+                        <p class="suggestions-title">Topics you can explore:</p>
+                        <div class="suggestions-grid">
+                            <button class="suggestion-chip" onclick="askAboutTopic('AI-Powered Chatbot')">AI Chatbot</button>
+                            <button class="suggestion-chip" onclick="askAboutTopic('Rule-Based Chatbot')">Rule-Based</button>
+                            <button class="suggestion-chip" onclick="askAboutTopic('Healthcare Chatbot')">Healthcare</button>
+                            <button class="suggestion-chip" onclick="askAboutTopic('Banking Chatbot')">Banking</button>
+                            <button class="suggestion-chip" onclick="askAboutTopic('Educational Chatbot')">Educational</button>
+                            <button class="suggestion-chip" onclick="askAboutTopic('Customer Support Chatbot')">Support Bot</button>
+                            <button class="suggestion-chip" onclick="askAboutTopic('HR Chatbot')">HR Chatbot</button>
+                            <button class="suggestion-chip" onclick="askAboutTopic('Sales Chatbot')">Sales Bot</button>
+                            <button class="suggestion-chip" onclick="askAboutTopic('NLP Chatbot')">NLP Bot</button>
+                            <button class="suggestion-chip" onclick="askAboutTopic('Voice Chatbot')">Voice Bot</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Input Area -->
+        <div class="input-area-wrapper">
+            <form id="chat-form" class="input-area">
+                <input type="text" id="user-input" placeholder="Ask about any chatbot type (e.g., AI chatbot, healthcare bot) or type 'help'..." autocomplete="off">
+                <button type="button" id="voice-button" aria-label="Voice Input">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="22"></line>
+                    </svg>
+                </button>
+                <button type="submit" id="send-button" aria-label="Send Message">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </form>
+            <div class="footer-text">
+                Chatbot Types Expert · Restricted Domain AI
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
