@@ -227,7 +227,7 @@ chatForm.addEventListener('submit', (e) => {
 
     const apiUrl = window.location.protocol === 'file:' || window.location.hostname === 'localhost' 
         ? "http://localhost:3000/chat" 
-        : "/chat";
+        : "https://iint-428-chatbot-1.onrender.com/chat";
 
     fetch(apiUrl, {
         method: "POST",

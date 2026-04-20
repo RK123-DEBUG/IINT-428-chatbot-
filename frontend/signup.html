@@ -66,7 +66,10 @@
             }
             
             try {
-                const res = await fetch('http://localhost:3000/api/signup', {
+                const apiUrl = window.location.protocol === 'file:' || window.location.hostname === 'localhost' 
+                    ? 'http://localhost:3000/api/signup' 
+                    : 'https://iint-428-chatbot-1.onrender.com/api/signup';
+                const res = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, emailOrMobile, password })
