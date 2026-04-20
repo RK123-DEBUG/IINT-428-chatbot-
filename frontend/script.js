@@ -56,6 +56,18 @@ function loadSession(id) {
     renderSidebar();
 }
 
+function deleteSession(e, id) {
+    e.stopPropagation();
+    let sessions = getChatSessions();
+    delete sessions[id];
+    saveChatSessions(sessions);
+    if (currentSessionId === id) {
+        startNewChat();
+    } else {
+        renderSidebar();
+    }
+}
+
 function renderSidebar() {
     const list = document.getElementById('history-list');
     if (!list) return;
@@ -66,7 +78,29 @@ function renderSidebar() {
     sorted.forEach(session => {
         const div = document.createElement('div');
         div.className = `history-item ${session.id === currentSessionId ? 'active' : ''}`;
-        div.textContent = session.title;
+        
+        const titleSpan = document.createElement('span');
+        titleSpan.textContent = session.title;
+        titleSpan.style.flex = "1";
+        titleSpan.style.overflow = "hidden";
+        titleSpan.style.textOverflow = "ellipsis";
+        titleSpan.style.whiteSpace = "nowrap";
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = '🗑️';
+        deleteBtn.style.background = 'none';
+        deleteBtn.style.border = 'none';
+        deleteBtn.style.cursor = 'pointer';
+        deleteBtn.style.fontSize = '14px';
+        deleteBtn.title = "Delete Chat";
+        deleteBtn.onclick = (e) => deleteSession(e, session.id);
+
+        div.style.display = "flex";
+        div.style.alignItems = "center";
+        div.style.justifyContent = "space-between";
+        div.appendChild(titleSpan);
+        div.appendChild(deleteBtn);
+        
         div.onclick = () => loadSession(session.id);
         list.appendChild(div);
     });
@@ -175,13 +209,26 @@ chatForm.addEventListener('submit', (e) => {
     showMessage(userInput, false);
     userInputArea.value = '';
 
+    let historyContext = [];
+    if (currentSessionId) {
+        let sessions = getChatSessions();
+        if (sessions[currentSessionId]) {
+            const sessionMsgs = sessions[currentSessionId].messages;
+            // Get last 10 messages excluding the current userInput we just added
+            historyContext = sessionMsgs.slice(0, -1).slice(-10).map(msg => ({
+                role: msg.isBot ? "assistant" : "user",
+                content: msg.content
+            }));
+        }
+    }
+
     // Show typing indicator and call backend
     showTypingIndicator();
 
     fetch("http://localhost:3000/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userInput })
+        body: JSON.stringify({ message: userInput, history: historyContext })
     })
     .then(res => res.json())
     .then(data => {

@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 // API Keys Array
-const apiKeys = [process.env.GEMINI_API_KEY, process.env.GEMINI_API_KEY_2].filter(Boolean);
+const apiKeys = [process.env.OPENROUTER_API_KEY, process.env.GEMINI_API_KEY, process.env.GEMINI_API_KEY_2].filter(Boolean);
 let currentKeyIndex = 0;
 
 // User Management (Basic JSON store)
@@ -65,17 +65,19 @@ app.post('/api/login', (req, res) => {
 // ─────────────────────────────────────────────
 const systemPrompt = `You are a strict, domain-focused AI assistant. You specialize exclusively in chatbot technologies, AI, NLP, and conversational interfaces.
 Your rules:
-1. If the user asks ANY personal questions, general knowledge questions, programming questions unrelated to chatbots, or about any other subjects, YOU MUST REJECT IT.
-2. If the user asks out-of-domain questions, politely reject them with a message directly similar to: "I am designed to answer questions related to chatbots and AI. I can explain to you about NLP chatbots, rule-based systems, and related topics."
-3. Never answer the out-of-domain question, even partially. Just provide the polite rejection.
-4. For valid questions within your domain (chatbots, AI, NLP), provide clear, insightful, and helpful answers.`;
+1. You may engage normally in casual conversation, greetings (like "hi", "hello", "how are you"), and polite pleasantries. Be friendly and conversational like ChatGPT.
+2. If the user asks specific questions about OTHER subjects, general knowledge outside AI/chatbots, or programming unrelated to chatbots/CSE, YOU MUST REJECT IT.
+3. If the user asks out-of-domain questions, politely reject them with exactly this message: "I am designed to answer questions related to chatbots and AI. I can explain to you about NLP chatbots, rule-based systems, and related topics."
+4. Never answer out-of-domain questions, even partially. Just provide the polite rejection.
+5. For valid questions within your domain (chatbots, AI, NLP), provide clear, insightful, and helpful answers.`;
 
 app.post("/chat", async (req, res) => {
     const userMessage = req.body.message || "";
+    const history = req.body.history || [];
     console.log("➡ Message:", userMessage);
 
     if (apiKeys.length === 0) {
-        return res.status(500).json({ error: "No API keys configured. Please set GEMINI_API_KEY in .env" });
+        return res.status(500).json({ error: "No API keys configured. Please set OPENROUTER_API_KEY or GEMINI_API_KEY in .env" });
     }
 
     try {
@@ -100,6 +102,7 @@ app.post("/chat", async (req, res) => {
                             max_tokens: 8000,
                             messages: [
                                 { role: "system", content: systemPrompt },
+                                ...history.map(msg => ({ role: msg.role, content: msg.content })),
                                 { role: "user", content: userMessage }
                             ]
                         },
@@ -120,7 +123,10 @@ app.post("/chat", async (req, res) => {
                         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${keyToUse}`,
                         {
                             systemInstruction: { parts: [{ text: systemPrompt }] },
-                            contents: [{ parts: [{ text: userMessage }] }]
+                            contents: [
+                                ...history.map(msg => ({ role: msg.role === "assistant" ? "model" : "user", parts: [{ text: msg.content }] })),
+                                { role: "user", parts: [{ text: userMessage }] }
+                            ]
                         }
                     );
                     reply = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -161,6 +167,6 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`🔑 Loaded ${apiKeys.length} API key(s)`);
     if (apiKeys.length === 0) {
-        console.warn("⚠️ Warning: GEMINI_API_KEY is NOT set in .env!");
+        console.warn("⚠️ Warning: OPENROUTER_API_KEY or GEMINI_API_KEY is NOT set in .env!");
     }
 });
